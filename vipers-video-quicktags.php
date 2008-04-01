@@ -874,11 +874,9 @@ class VipersVideoQuicktags {
 	}
 }
 
-global $VipersVideoQuicktags; // For WordPress 2.5+
 
 $VipersVideoQuicktags = new VipersVideoQuicktags();
 
-global $VipersVideoQuicktags; // For WordPress 2.5+
 
 // ButtonSnap needs to be loaded outside the class in order to work right
 require_once( ABSPATH . $VipersVideoQuicktags->folder . '/resources/buttonsnap.php' );
