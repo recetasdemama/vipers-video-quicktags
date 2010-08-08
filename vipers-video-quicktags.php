@@ -5,7 +5,7 @@
 Plugin Name:  Viper's Video Quicktags
 Plugin URI:   http://www.viper007bond.com/wordpress-plugins/vipers-video-quicktags/
 Description:  Embeds thingies.
-Version:      7.0.0 Super Alpha 2010.06.16
+Version:      7.0.0 Super Alpha
 Author:       Viper007Bond
 Author URI:   http://www.viper007bond.com/
 
