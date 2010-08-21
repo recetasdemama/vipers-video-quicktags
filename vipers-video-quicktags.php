@@ -26,6 +26,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+**************************************************************************
+
+This plugin is currently a bit of a mess as it's still in proof of concept
+form while I knock out the basic functionality and test it.
+
+Mind your step. ;)
+
 **************************************************************************/
 
 class VipersVideoQuicktags {
@@ -94,8 +101,8 @@ class VipersVideoQuicktags {
 
 		wp_oembed_add_provider( 'http://vids.myspace.com/*', 'http://vids.myspace.com/index.cfm?fuseaction=oembed' );
 
-		wp_embed_register_handler( 'vvq_veoh_old', '#http://(www\.)?veoh\.com/videos/([0-9a-zA-Z]+).*#i', array(&$this, 'veoh_old') );
 		wp_embed_register_handler( 'vvq_veoh_new', '#http://(www\.)?veoh\.com/(.*?)/watch/([0-9a-zA-Z]+).*#i', array(&$this, 'veoh_new') );
+		wp_embed_register_handler( 'vvq_veoh_old', '#http://(www\.)?veoh\.com/videos/([0-9a-zA-Z]+).*#i', array(&$this, 'veoh_old') );
 		wp_embed_register_handler( 'vvq_metacafe', '#http://(www\.)?metacafe\.com/watch/([0-9]+)/.*#i', array(&$this, 'metacafe') );
 		wp_embed_register_handler( 'vvq_spike', '#http://(www.ifilm|ifilm|www.spike|spike)\.com/(.+)/(\d+).*#i', array(&$this, 'spike') );
 		wp_embed_register_handler( 'vvq_flv', '#http(s)?://(.+)\.(flv|mp4|m4v|mp3)#i', array(&$this, 'flv'), 100 );
@@ -231,12 +238,12 @@ class VipersVideoQuicktags {
 
 
 /*
+		// For my blog until the settings page is working
 		$usersettings = $this->defaultsettings;
 		$usersettings['youtube']['color1'] = '#C2DC15';
 		$usersettings['youtube']['color2'] = '#C2DC15';
-		//$usersettings['youtube']['hd'] = 1;
 		$usersettings['vimeo']['color'] = '#C2DC15';
-*/
+/**/
 
 
 		/*
@@ -294,7 +301,7 @@ class VipersVideoQuicktags {
 
 
 	function register_settings_page() {
-		add_options_page( __("Viper's Video Quicktags Configuration", 'vipers-video-quicktags'), __('Video Quicktags', 'vipers-video-quicktags'), 'manage_options', 'vipers-video-quicktags', array(&$this, 'settings_page') );
+		add_options_page( __("Viper's Video Quicktags Configuration", 'vipers-video-quicktags'), __('Video Quicktags', 'vipers-video-quicktags'), 'manage_options', 'vipers-video-quicktags', array(&$this, 'settings_page_new') );
 	}
 
 
@@ -547,6 +554,8 @@ class VipersVideoQuicktags {
 
 
 	function vimeo( $html, $url, $atts ) {
+		global $wp_embed, $post;
+
 		$origatts = $atts;
 
 		// Set any missing $atts items to the defaults
@@ -563,23 +572,35 @@ class VipersVideoQuicktags {
 		// Allow other plugins to modify these values (for example based on conditionals)
 		$atts = apply_filters( 'vvq_shortcodeatts', $atts, 'vimeo', $origatts );
 
+		// If the old style <object> HTML is in the cache, flush it out and replace it with the better iframe HTML
+		// Make sure there's no iframe just incase (to avoid continual cache flushes due to unforeseen circumstances)
+		if ( !empty( $post->ID ) && false !== strpos( $html, '<object ' ) && false === strpos( $html, '<iframe ' ) ) {
+			$wp_embed->delete_oembed_caches( $post->ID );
+			$html = $wp_embed->shortcode( $origatts, $url ); // $origatts is important so we get the same MD5 hash
+		}
+
 		// Determine the width/height
 		$dims = $this->calculate_dims( $html, $atts );
 
 		// Get the SWf URL and Flashvars out of the HTML
-		if ( !preg_match( '# data="([^"]+)(.*)param name="flashvars" value="([^"]+)#i', $html, $parsed ) )
-			return 'parsefail' . $html;
-		$swfurl = $parsed[1];
-		$flashvars = $parsed[3];
+		if ( !preg_match( '#iframe([^"]+)? src="([^"]+)#i', $html, $parsed ) )
+			return $html;
+		$iframeurl = $parsed[2];
 
-		// Add user preferences
-		$flashvars = add_query_arg( 'color',         str_replace( '#', '', $atts['color'] ), $flashvars );
-		$flashvars = add_query_arg( 'show_portrait', $atts['portrait'],                      $flashvars );
-		$flashvars = add_query_arg( 'show_title',    $atts['title'],                         $flashvars );
-		$flashvars = add_query_arg( 'show_byline',   $atts['byline'],                        $flashvars );
-		$flashvars = add_query_arg( 'fullscreen',    $atts['fullscreen'],                    $flashvars );
+		// Setup the parameters
+		$portrait   = ( 1 == $atts['portrait'] )   ? '1' : '0';
+		$title      = ( 1 == $atts['title'] )      ? '1' : '0';
+		$byline     = ( 1 == $atts['byline'] )     ? '1' : '0';
+		$fullscreen = ( 1 == $atts['fullscreen'] ) ? '1' : '0';
 
-		return $this->object_html( $swfurl, $dims, 'vimeo', array( 'flashvars' => $flashvars ) );
+		foreach ( array( 'title', 'byline', 'portrait', 'fullscreen' ) as $attribute ) {
+			$iframeurl = add_query_arg( $attribute, $$attribute, $iframeurl );
+		}
+
+		if ( '' != $atts['color'] && $this->defaultsettings['vimeo']['color'] != $atts['color'] )
+			$iframeurl = add_query_arg( 'color', str_replace( '#', '', $atts['color'] ), $iframeurl );
+
+		return '<span class="vvqbox vvqvimeo" style="width:' . $dims['width'] . 'px;height:' . $dims['height'] . 'px;"><iframe id="' . $this->videoid( 'vimeo' ) . '" src="' . esc_attr( $iframeurl ) . '" width="' . $dims['width'] . '" height="' . $dims['height'] . '" frameborder="0"><a href="http://www.vimeo.com/' . $videoid . '">http://www.vimeo.com/' . $videoid . '</a></iframe></span>';
 	}
 
 
