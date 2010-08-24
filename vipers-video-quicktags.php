@@ -234,16 +234,16 @@ class VipersVideoQuicktags {
 		) );
 
 		// Grab the user's settings
-		$usersettings = (array) get_option('vvq_options');
+		$usersettings = (array) get_option( 'vvq_options' );
 
 
-/*
 		// For my blog until the settings page is working
-		$usersettings = $this->defaultsettings;
-		$usersettings['youtube']['color1'] = '#C2DC15';
-		$usersettings['youtube']['color2'] = '#C2DC15';
-		$usersettings['vimeo']['color'] = '#C2DC15';
-/**/
+		if ( 'http://www.viper007bond.com' == get_option( 'home' ) ) {
+			$usersettings = $this->defaultsettings;
+			$usersettings['youtube']['color1'] = '#C2DC15';
+			$usersettings['youtube']['color2'] = '#C2DC15';
+			$usersettings['vimeo']['color'] = '#C2DC15';
+		}
 
 
 		/*
@@ -600,7 +600,7 @@ class VipersVideoQuicktags {
 		if ( '' != $atts['color'] && $this->defaultsettings['vimeo']['color'] != $atts['color'] )
 			$iframeurl = add_query_arg( 'color', str_replace( '#', '', $atts['color'] ), $iframeurl );
 
-		return '<span class="vvqbox vvqvimeo" style="width:' . $dims['width'] . 'px;height:' . $dims['height'] . 'px;"><iframe id="' . $this->videoid( 'vimeo' ) . '" src="' . esc_attr( $iframeurl ) . '" width="' . $dims['width'] . '" height="' . $dims['height'] . '" frameborder="0"><a href="http://www.vimeo.com/' . $videoid . '">http://www.vimeo.com/' . $videoid . '</a></iframe></span>';
+		return '<span class="vvqbox vvqvimeo" style="width:' . $dims['width'] . 'px;height:' . $dims['height'] . 'px;"><iframe src="' . esc_attr( $iframeurl ) . '" width="' . $dims['width'] . '" height="' . $dims['height'] . '" frameborder="0"><a href="http://www.vimeo.com/' . $videoid . '">http://www.vimeo.com/' . $videoid . '</a></iframe></span>';
 	}
 
 
