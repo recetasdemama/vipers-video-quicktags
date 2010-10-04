@@ -119,7 +119,7 @@ class VipersVideoQuicktags {
 
 
 
-		$this->shortcodes = (array) apply_filters( 'vvq_shortcodes', array(
+		$shortcodes = array(
 			'bliptv'       => 'shortcode_bliptv',
 			'blip.tv'      => 'shortcode_bliptv',
 			'dailymotion'  => false,
@@ -133,10 +133,15 @@ class VipersVideoQuicktags {
 			'veoh'         => false,
 			'viddler'      => false,
 			'vimeo'        => false,
-			'wpvideo'      => 'shortcode_videopress',
 			'youtube'      => false,
 			'flv'          => false,
-		) );
+		);
+
+		// VideoPress support but only if the official plugin isn't installed
+		if ( !function_exists('videopress_shortcode') && !isset($shortcode_tags['wpvideo']) )
+			$shortcodes['wpvideo'] = 'shortcode_videopress';
+
+		$this->shortcodes = (array) apply_filters( 'vvq_shortcodes', $shortcodes );
 
 
 		// This is strictly here so that strip_shortcodes() works
