@@ -12,6 +12,11 @@ As such, I do not recommend using this in a production environment. I'm only sha
 publicly so that fellow plugin developers can follow along in the development of this plugin
 and provide feedback along the way.
 
+Ready to give it a try? Then checkout the following URL using your SVN client:
+
+http://plugins.svn.wordpress.org/vipers-video-quicktags/branches/development
+
+
 Questions? Comments? Feedback? Please send them to me!
 
 http://www.viper007bond.com/contact/
