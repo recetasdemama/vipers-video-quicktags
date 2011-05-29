@@ -245,8 +245,8 @@ class VipersVideoQuicktags {
 		// For my blog until the settings page is working
 		if ( 'http://www.viper007bond.com' == get_option( 'home' ) ) {
 			$usersettings = $this->defaultsettings;
-			$usersettings['youtube']['color1'] = '#C2DC15';
-			$usersettings['youtube']['color2'] = '#C2DC15';
+			//$usersettings['youtube']['color1'] = '#C2DC15';
+			//$usersettings['youtube']['color2'] = '#C2DC15';
 			$usersettings['vimeo']['color'] = '#C2DC15';
 		}
 
