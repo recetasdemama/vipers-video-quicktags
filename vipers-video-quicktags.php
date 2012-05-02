@@ -2913,19 +2913,22 @@ class VipersVideoQuicktags {
 
 
 		$objectid = $this->videoid('youtube');
-
-		// Hack until this plugin properly supports iframe-based embeds
-		if ( ! empty( $iframe ) ) {
-			return '<iframe class="vvqbox vvqyoutube" width="' . esc_attr( $atts['width'] ) . '" height="' . esc_attr( $atts['height'] ) . '" src="'. esc_url( $iframe . '&rel=' . $rel . '&fs=' . $fs . '&showsearch=' . $showsearch . '&showinfo=' . $showinfo . $autoplay . $loop . $hd ) . '" frameborder="0" allowfullscreen></iframe>';
-		}
-
+    $id_video = rand(1,9999);
 		$this->swfobjects[$objectid] = array(
 			'width' => $atts['width'],
 			'height' => $atts['height'],
 			'url' => 'http://www.youtube.com/' . $embedpath . $color1 . $color2 . $border . '&rel=' . $rel . '&fs=' . $fs . '&showsearch=' . $showsearch . '&showinfo=' . $showinfo . $autoplay . $loop . $hd,
 		);
+    $a = "var so = new SWFObject('http://www.recetasdemama.es/player/player.swf','single','620','410','9')";
+    $b = "so.addParam('allowfullscreen','true')";
+    $c = "so.addParam('allowscriptaccess','always')";
+    $d = "so.addVariable('file','$fallbacklink')";
+    $e = "so.addVariable('plugins','adtvideo,gapro-1,fbit-1')";
+    $f = "so.addVariable('gapro.accountid','UA-1628075-7')";
+    $g = "so.addVariable('adtvideo.config', 'http://reachandrich.antevenio.com/call/pubj/24674/167985/4332/M/[timestamp]/[target]?')";
+    $h = "so.write('$id_video')";
 
-		return '<span class="vvqbox vvqyoutube" style="width:' . $atts['width'] . 'px;height:' . $atts['height'] . 'px;"><span id="' . $objectid . '"><a href="' . $fallbacklink . '">' . $fallbackcontent . '</a></span></span>';
+    return '<script src="http://www.recetasdemama.es/player/swfobject.js" type="text/javascript"></script><div id="' . $id_video . '">LAS RECETAS DE MAMA</div><script type="text/javascript"> ' . $a . ';' . $b . ';' . $c . ';' . $d . ';' . $e . ';' . $f . ';' . $g . ';' . $h . ';</script>';
 	}
 
 
