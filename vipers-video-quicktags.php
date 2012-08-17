@@ -2982,8 +2982,10 @@ class VipersVideoQuicktags {
 			'height' => $atts['height'],
 			'url' => 'http://www.youtube.com/' . $embedpath . $color1 . $color2 . $border . '&rel=' . $rel . '&fs=' . $fs . '&showsearch=' . $showsearch . '&showinfo=' . $showinfo . $autoplay . $loop . $hd,
 		);
-
-		return '<span class="vvqbox vvqyoutube" style="width:' . $atts['width'] . 'px;height:' . $atts['height'] . 'px;"><span id="' . $objectid . '"><a href="' . $fallbacklink . '">' . $fallbackcontent . '</a></span></span>';
+		
+		$id_video = rand(1,9999);
+  	$fallbacklink2 = '"'.$fallbacklink.'"';
+  	return '<script type="text/javascript" src="http://static.recetasdemama.es/OVAplayer/jwplayer.js"></script><div id="ova-jwplayer-container-'.$id_video.'"></div><script type="text/javascript">jwplayer("ova-jwplayer-container-'.$id_video.'").setup({ flashplayer: "http://static.recetasdemama.es/OVAplayer/player.swf", width: "630", height: "418", controlbar: "bottom", "config": "fraybbon", "image": "", "file": '.$fallbacklink2.', "wmode": "opaque", "playlist.position": "none", "playlistsize": "180", events: {},config: "http://static.recetasdemama.es/OVAplayer/fraybbon.xml"});</script>';
 	}
 
 
